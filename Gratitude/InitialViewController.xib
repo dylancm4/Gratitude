@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="InitialViewController" customModule="Gratitude" customModuleProvider="target">
+            <connections>
+                <outlet property="loginButton" destination="nj5-wV-rqJ" id="9d4-Qc-6wm"/>
+                <outlet property="signupButton" destination="cVn-qb-Mgd" id="Db4-7L-ixE"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cVn-qb-Mgd">
+                    <rect key="frame" x="10" y="448" width="300" height="50"/>
+                    <color key="backgroundColor" red="0.98431372549019602" green="0.97254901960784312" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="87G-Ae-aHj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="Sign up">
+                        <color key="titleColor" red="0.94901960784313721" green="0.4392156862745098" blue="0.51372549019607838" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="onSignupButton:" destination="-1" eventType="touchUpInside" id="iwi-Rm-3SD"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nj5-wV-rqJ">
+                    <rect key="frame" x="10" y="508" width="300" height="50"/>
+                    <color key="backgroundColor" red="0.98431372549019602" green="0.97254901960784312" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="QZ6-dt-hPe"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="Already have an account?">
+                        <color key="titleColor" red="0.94901960784313721" green="0.4392156862745098" blue="0.51372549019607838" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="onLoginButton:" destination="-1" eventType="touchUpInside" id="TbS-c1-eV4"/>
+                    </connections>
+                </button>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="gratitude-400" translatesAutoresizingMaskIntoConstraints="NO" id="0rU-Y8-Oii">
+                    <rect key="frame" x="72.5" y="196.5" width="175" height="175"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="175" id="WNk-il-8GW"/>
+                        <constraint firstAttribute="height" constant="175" id="yBT-bC-T4N"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="0.24705882352941178" green="0.72156862745098038" blue="0.68627450980392157" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="0rU-Y8-Oii" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="0N4-Zl-Iv0"/>
+                <constraint firstAttribute="trailing" secondItem="cVn-qb-Mgd" secondAttribute="trailing" constant="10" id="6jL-Pv-G61"/>
+                <constraint firstAttribute="bottom" secondItem="nj5-wV-rqJ" secondAttribute="bottom" constant="10" id="Bu4-un-aOL"/>
+                <constraint firstItem="nj5-wV-rqJ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="Fwh-dC-OLu"/>
+                <constraint firstItem="0rU-Y8-Oii" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Lgo-KW-2T4"/>
+                <constraint firstItem="nj5-wV-rqJ" firstAttribute="top" secondItem="cVn-qb-Mgd" secondAttribute="bottom" constant="10" id="k6g-3x-zZ0"/>
+                <constraint firstItem="cVn-qb-Mgd" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="sAw-Xm-sgp"/>
+                <constraint firstAttribute="trailing" secondItem="nj5-wV-rqJ" secondAttribute="trailing" constant="10" id="tre-GQ-Ex4"/>
+            </constraints>
+        </view>
+    </objects>
+    <resources>
+        <image name="gratitude-400" width="400" height="400"/>
+    </resources>
+</document>
