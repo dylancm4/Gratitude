@@ -49,6 +49,7 @@ struct Constants {
         static let saveButton = "save-22"
         static let cancelButton = "cancel-22"
         static let camera = "camera-128"
+        static let imagePlaceholder = "image-placeholder-512"
     }
     
     struct Firebase {

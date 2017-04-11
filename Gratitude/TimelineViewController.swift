@@ -173,6 +173,12 @@ class TimelineViewController: ViewControllerBase {
             }
         }
         
+        // Display error banner if network is offline.
+        if !FirebaseClient.shared.isConnected, let navigationController = self.navigationController {
+
+            ErrorBanner.presentError(message: "Network Offline", inView: navigationController.view)
+        }
+        
         // Get existing entries.
         getEntries()
     }

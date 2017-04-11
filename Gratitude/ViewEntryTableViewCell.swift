@@ -111,6 +111,12 @@ class ViewEntryTableViewCell: UITableViewCell {
                     },
                     failure: { (error: Error) in
                         
+                        DispatchQueue.main.async {
+                            
+                            // Display placeholder image if there is an error
+                            // loading the image.
+                            self.entryImageView.image = UIImage(named: Constants.ImageName.imagePlaceholder)
+                        }
                     })
             }
             else {

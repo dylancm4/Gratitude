@@ -156,6 +156,12 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                     },
                     failure: { (error: Error) in
                         
+                        DispatchQueue.main.async {
+                        
+                            // Display placeholder image if there is an error
+                            // loading the image.
+                            self.uploadImageButton.setImage(UIImage(named: Constants.ImageName.imagePlaceholder), for: .normal)
+                        }
                     })
             }
         }
