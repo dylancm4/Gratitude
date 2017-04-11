@@ -166,8 +166,11 @@ class LoginSignupViewController: UIViewController {
                     
                         progressHud.hide(animated: true)
                     }
-                
-                    ErrorBanner.presentError(message: "Incorrect email and password", inView: self.view)
+                    
+                    ErrorBanner.presentError(message: "Sign in failure", inView: self.view)
+                    let alert = UIAlertController(title: "Sign in failure", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
+                    self.present(alert, animated: true)
                 })
         }
     }

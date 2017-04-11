@@ -13,7 +13,6 @@ class TimelineViewController: ViewControllerBase {
     @IBOutlet weak var tableView: UITableView!
     
     var sections = [TimelineSection]()
-    var progressHud: ProgressHUD?
     
     var newEntryObserver: NSObjectProtocol?
     var replaceEntryObserver: NSObjectProtocol?
@@ -84,13 +83,6 @@ class TimelineViewController: ViewControllerBase {
         tableView.register(
             UINib(nibName: Constants.ClassName.timelineTableViewCellXib, bundle: nil),
             forCellReuseIdentifier: Constants.CellReuseIdentifier.timelineCell)
-        
-        // Set up the ProgressHUD.
-        progressHud = ProgressHUD(view: view)
-        if let progressHud = progressHud {
-            
-            view.addSubview(progressHud)
-        }
         
         // When an entry is created, add it to the table.
         newEntryObserver = NotificationCenter.default.addObserver(
@@ -271,36 +263,6 @@ class TimelineViewController: ViewControllerBase {
             }
         }
         return nil
-    }
-    
-    // Display progress HUD before the request is made.
-    func willRequest() {
-        
-        if let progressHud = progressHud {
-            
-            progressHud.show(animated: true)
-        }
-    }
-    
-    // Show or hide the error banner based on success or failure. Hide the
-    // progress HUD.
-    func requestDidSucceed(_ success: Bool) {
-        
-        DispatchQueue.main.async {
-            
-            if !success {
-                
-                if let navigationController = self.navigationController {
-                    
-                    ErrorBanner.presentError(message: "Network Error", inView: navigationController.view)
-                }
-            }
-            
-            if let progressHud = self.progressHud {
-                
-                progressHud.hide(animated: true)
-            }
-        }
     }
     
     // Push the ViewEntryScrollingViewController for the specified entry.

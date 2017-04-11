@@ -53,6 +53,8 @@ struct Constants {
     
     struct Firebase {
         
+        static let connectedPath = ".info/connected"
+        
         static let usersKey = "users"
         
         struct User {

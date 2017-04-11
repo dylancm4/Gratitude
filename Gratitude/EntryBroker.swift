@@ -42,7 +42,7 @@ class EntryBroker {
                 NotificationCenter.default.post(name: Constants.NotificationName.deleteEntry, object: localEntry)
 
                 let alertController = UIAlertController(title: "Error saving entry", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
-                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
+                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert: UIAlertAction) in
                     
                 }))
                 alertController.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
@@ -83,7 +83,7 @@ class EntryBroker {
 
                 let alertController = UIAlertController(title: "Error saving entry", message:
                     error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
-                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
+                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert: UIAlertAction) in
                     
                 }))
                 alertController.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
@@ -121,7 +121,7 @@ class EntryBroker {
 
                 let alertController = UIAlertController(title: "Error deleting entry", message:
                     error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
-                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
+                alertController.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alert: UIAlertAction) in
                     
                     NotificationCenter.default.post(name: Constants.NotificationName.replaceEntry, object: notificationObject)
                 }))

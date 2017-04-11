@@ -15,6 +15,7 @@ class FirebaseClient {
     // Shared instance.
     static var shared = FirebaseClient()
     
+    var isConnected = false
     var observeEntriesHandle: UInt?
     
     // True if a user is signed in, false otherwise.
@@ -31,6 +32,25 @@ class FirebaseClient {
     func configure() {
         
         FIRApp.configure()
+        
+        // Enable disk persistence to maintain state while offline.
+        FIRDatabase.database().persistenceEnabled = true
+        
+        // Track whether we are connected.
+        let connectedNode = FIRDatabase.database().reference(withPath: Constants.Firebase.connectedPath)
+        connectedNode.observe(
+            .value,
+            with: { snapshot in
+            
+                if let connected = snapshot.value as? Bool, connected {
+                
+                    self.isConnected = true
+                }
+                else {
+                    
+                    self.isConnected = false
+                }
+            })
     }
     
     // Create and sign in a user with the given email address and password.
@@ -136,6 +156,15 @@ class FirebaseClient {
     // Create an entry node for the specified entry.
     func createEntry(text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
         
+        // Firebase persistence does not work correctly for FIRStorage, so
+        // error out if not connected.
+        if image != nil && !isConnected {
+            
+            let userInfo = [NSLocalizedDescriptionKey : "Error creating entry. Network offline."]
+            failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+            return
+        }
+
         let funcSuccess = success
         let funcFailure = failure
         if let currentUserId = User.currentUser?.id {
@@ -167,6 +196,15 @@ class FirebaseClient {
 
     // Update the entry node for the specified entry.
     func updateEntry(entryId: String, text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
+        
+        // Firebase persistence does not work correctly for FIRStorage, so
+        // error out if not connected.
+        if image != nil && !isConnected {
+            
+            let userInfo = [NSLocalizedDescriptionKey : "Error updating entry. Network offline."]
+            failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+            return
+        }
         
         let funcSuccess = success
         let funcFailure = failure
@@ -296,6 +334,15 @@ class FirebaseClient {
     // Delete the entry node for the specified entry.
     func deleteEntry(entry: Entry, success: @escaping () -> (), failure: @escaping (Error) -> ()) {
 
+        // Firebase persistence does not work correctly for FIRStorage, so
+        // error out if not connected.
+        if entry.imageUrl != nil && !isConnected {
+            
+            let userInfo = [NSLocalizedDescriptionKey : "Error deleting entry. Network offline."]
+            failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+            return
+        }
+        
         let funcSuccess = success
         let funcFailure = failure
         if let currentUserId = User.currentUser?.id, let entryId = entry.id {
@@ -448,14 +495,21 @@ class FirebaseClient {
                 metadata: nil,
                 completion: { (metadata: FIRStorageMetadata?, error: Error?) in
                     
-                    if let imageUrl = metadata?.downloadURL()?.absoluteString {
+                    if let error = error {
                         
-                        success(imageUrl)
+                        failure(error)
                     }
                     else {
                         
-                        let userInfo = [NSLocalizedDescriptionKey : "Error storing entry image."]
-                        failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+                        if let imageUrl = metadata?.downloadURL()?.absoluteString {
+                            
+                            success(imageUrl)
+                        }
+                        else {
+                            
+                            let userInfo = [NSLocalizedDescriptionKey : "Error storing entry image."]
+                            failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+                        }
                     }
                 })
         }

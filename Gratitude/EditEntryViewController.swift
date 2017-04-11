@@ -162,6 +162,8 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
         
         if let locationCoordinate = locationManager.location?.coordinate {
             
+            willRequest()
+
             // First show Google Maps state and city, and then try reverse
             // geocoding to try Apple maps for placemarks.
             placeOfInterest = GoogleMapsClient.shared.getAddressDescription(latitude: Float(locationCoordinate.latitude), longitude: Float(locationCoordinate.longitude))
@@ -170,6 +172,8 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
             AppleMapsClient.shared.getAreaOfInterest(
                 location: locationManager.location!,
                 completion: {(areaOfInterest: String?, error: Error?) -> Void in
+                    
+                    self.requestDidSucceed(error == nil)
                 
                     if error == nil, let areaOfInterest = areaOfInterest {
                         
@@ -224,14 +228,17 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                 placemark = placeOfInterest
             }
             
-            EntryBroker.shared.createEntry(
-                text: textView.text,
-                image: image,
-                happinessLevel: Int(feelingSlider.value),
-                placemark: placemark,
-                location: getLocationObject())
-            
-            dismiss(animated: true, completion: nil)
+            // Dismiss the view controller before creating the entry.
+            dismiss(
+                animated: true,
+                completion: {
+                    EntryBroker.shared.createEntry(
+                        text: self.textView.text,
+                        image: image,
+                        happinessLevel: Int(self.feelingSlider.value),
+                        placemark: placemark,
+                        location: self.getLocationObject())
+                })
         }
     }
     
@@ -244,15 +251,18 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
             image = uploadImageButton.image(for: .normal)!
         }
         
-        EntryBroker.shared.updateEntry(
-            originalEntry: entry!,
-            text: textView.text,
-            image: image,
-            happinessLevel: Int(feelingSlider.value),
-            placemark: locationTextField.text,
-            location: getLocationObject())
-
-        dismiss(animated: true, completion: nil)
+        // Dismiss the view controller before updating the entry.
+        dismiss(
+            animated: true,
+            completion: {
+                EntryBroker.shared.updateEntry(
+                    originalEntry: self.entry!,
+                    text: self.textView.text,
+                    image: image,
+                    happinessLevel: Int(self.feelingSlider.value),
+                    placemark: self.locationTextField.text,
+                    location: self.getLocationObject())
+            })
     }
     
     @IBAction func onUploadButton(_ sender: Any) {
