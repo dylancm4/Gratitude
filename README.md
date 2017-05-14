@@ -1,7 +1,7 @@
 
 # Gratitude
 
-Gratitude is a gratitude journal app. Users can create, edit, and delete journal entries with text, a picture, a location, and a mood. Gratitude uses Firebase for user sign up, log in, database, and storage.
+Gratitude is a gratitude journal app. Users can create, edit, and delete journal entries with text, a picture or video, a location, and a mood. Gratitude uses Firebase for user sign up, log in, database, and storage.
 
 ## Open-Source Libraries Used
 * Firebase
