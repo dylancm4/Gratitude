@@ -90,8 +90,18 @@ extension ViewEntryScrollingViewController: UITableViewDataSource, UITableViewDe
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.CellReuseIdentifier.timelineCell) as! ViewEntryTableViewCell
         
         // Set the cell contents.
-        cell.setData(entry: entry)
+        cell.setData(entry: entry, delegate: self)
 
         return cell
+    }
+}
+
+// ViewEntryTableViewCell methods
+extension ViewEntryScrollingViewController: ViewEntryTableViewCellDelegate {
+    
+    func viewEntryCellPlayVideo(forVideoUrl videoUrl: URL) {
+        
+        // Present the AVPlayerViewController for the video.
+        presentVideoPlayerViewController(forVideoUrl: videoUrl)
     }
 }

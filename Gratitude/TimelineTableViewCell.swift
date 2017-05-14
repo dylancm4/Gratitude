@@ -11,6 +11,7 @@ import UIKit
 protocol TimelineTableViewCellDelegate: class {
     
     func timelineCellWasTapped(_ cell: TimelineTableViewCell)
+    func timelineCellPlayVideo(forVideoUrl videoUrl: URL)
 }
 
 class TimelineTableViewCell: UITableViewCell {
@@ -23,6 +24,9 @@ class TimelineTableViewCell: UITableViewCell {
     @IBOutlet weak var locationImageView: UIImageView!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var entryImageView: UIImageView!
+    @IBOutlet weak var videoPlayButton: UIButton!
+    
+    var videoPlayUrl: URL?
     
     var entryImageViewAspectConstraint : NSLayoutConstraint? {
         
@@ -41,7 +45,7 @@ class TimelineTableViewCell: UITableViewCell {
     }
     
     var entry: Entry?
-    weak var delegate : TimelineTableViewCellDelegate?
+    weak var delegate: TimelineTableViewCellDelegate?
     let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     
@@ -54,6 +58,7 @@ class TimelineTableViewCell: UITableViewCell {
         locationImageView.image = locationImageView.image?.withRenderingMode(.alwaysTemplate)
         entryImageView.layer.cornerRadius = 3
         entryImageView.clipsToBounds = true
+        videoPlayButton.setImage(videoPlayButton.currentImage?.withRenderingMode(.alwaysTemplate), for: .normal)
 
         // Add a gesture recogizer programatically, since the following
         // error occurs otherwise: "invalid nib registered for identifier
@@ -71,15 +76,23 @@ class TimelineTableViewCell: UITableViewCell {
         // We use a tap gesture recognizer for the text view, since
         // otherwise taps on the UITextView will not register as selecting
         // a cell.
-        if sender.state == .ended
-        {
-            if let delegate = delegate
-            {
+        if sender.state == .ended {
+            
+            if let delegate = delegate {
+                
                 delegate.timelineCellWasTapped(self)
             }
         }
     }
 
+    @IBAction func onVideoPlayButton(_ sender: UIButton) {
+        
+        if let delegate = delegate, let videoPlayUrl = videoPlayUrl {
+            
+            delegate.timelineCellPlayVideo(forVideoUrl: videoPlayUrl)
+        }
+    }
+    
     // Set the cell contents based on the specified parameters.
     func setData(entry: Entry, delegate: TimelineTableViewCellDelegate) {
         
@@ -137,6 +150,19 @@ class TimelineTableViewCell: UITableViewCell {
                 setEntryImageViewAspectConstraint(hasImage: false, aspectRatio: nil)
                 entryImageView.image = nil
             }
+            
+            if let entryLocalVideoFileUrl = entry.localVideoFileUrl {
+                
+                videoPlayUrl = entryLocalVideoFileUrl
+            }
+            else if let entryVideoUrl = entry.videoUrl {
+                
+                videoPlayUrl = entryVideoUrl
+            }
+            else {
+                
+                videoPlayUrl = nil
+            }
         }
         else {
 
@@ -145,7 +171,7 @@ class TimelineTableViewCell: UITableViewCell {
                 setEntryImageViewAspectConstraint(hasImage: true, aspectRatio: entry.aspectRatio)
                 entryImageView.image = nil
                 AlamofireClient.shared.downloadImage(
-                    urlString: imageUrl,
+                    url: imageUrl,
                     success: { (image: UIImage) in
                         
                         DispatchQueue.main.async {
@@ -168,7 +194,18 @@ class TimelineTableViewCell: UITableViewCell {
                 setEntryImageViewAspectConstraint(hasImage: false, aspectRatio: nil)
                 entryImageView.image = nil
             }
+            
+            if let entryVideoUrl = entry.videoUrl {
+                
+                videoPlayUrl = entryVideoUrl
+            }
+            else {
+                
+                videoPlayUrl = nil
+            }
         }
+        
+        videoPlayButton.isHidden = videoPlayUrl == nil
         
         // Hide cells for which the entry is marked for deletion. Note that this
         // only hides the content of the cell, it does not change the cell height.

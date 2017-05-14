@@ -16,17 +16,18 @@ class EntryBroker {
     var currentViewController: UIViewController?
 
     // Create a new entry based on the specified parameters.
-    func createEntry(text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?) {
+    func createEntry(text: String, image: UIImage?, videoFileUrl: URL?, happinessLevel: Int, placemark: String?, location: Location?) {
         
         // Create a temporary "local" entry so that the user will immediately
         // see the entry they created. This "local" entry will receive special
         // treatment (e.g., no editing, no deleting).
-        let localEntry = Entry(text: text, image: image, happinessLevel: happinessLevel, placemark: placemark, createdDate: Date())
+        let localEntry = Entry(text: text, image: image, videoUrl: nil, videoFileUrl: videoFileUrl, happinessLevel: happinessLevel, placemark: placemark, createdDate: Date())
         NotificationCenter.default.post(name: Constants.NotificationName.newEntry, object: localEntry)
         
         FirebaseClient.shared.createEntry(
             text: text,
             image: image,
+            videoFileUrl: videoFileUrl,
             happinessLevel: happinessLevel,
             placemark: placemark,
             location: location,
@@ -47,25 +48,27 @@ class EntryBroker {
                 }))
                 alertController.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
                     
-                    self.createEntry(text: text, image: image, happinessLevel: happinessLevel, placemark: placemark, location: location)
+                    self.createEntry(text: text, image: image, videoFileUrl: videoFileUrl, happinessLevel: happinessLevel, placemark: placemark, location: location)
                 }))
                 self.currentViewController?.present(alertController, animated: true, completion: nil)
             })
     }
     
     // Update the specified entry based on the specified parameters.
-    func updateEntry(originalEntry: Entry, text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?) {
+    func updateEntry(originalEntry: Entry, text: String, image: UIImage?, isVideoEntry: Bool, videoFileUrl: URL?, happinessLevel: Int, placemark: String?, location: Location?) {
         
         // Replace the original entry with a temporary "local" entry, so that
         // the user will immediately see the changes.
-        let localEntry = Entry(text: text, image: image, happinessLevel: happinessLevel, placemark: placemark, createdDate: originalEntry.createdDate)
+        let localEntry = Entry(text: text, image: image, videoUrl: originalEntry.videoUrl, videoFileUrl: videoFileUrl, happinessLevel: happinessLevel, placemark: placemark, createdDate: originalEntry.createdDate)
         let notificationObject = ReplaceEntryNotificationObject(entryId: originalEntry.id!, replacementEntry: localEntry, useFadeAnimation: false)
         NotificationCenter.default.post(name: Constants.NotificationName.replaceEntry, object: notificationObject)
         
         FirebaseClient.shared.updateEntry(
-            entryId: originalEntry.id!,
+            originalEntry: originalEntry,
             text: text,
             image: image,
+            isVideoEntry: isVideoEntry,
+            videoFileUrl: videoFileUrl,
             happinessLevel: happinessLevel,
             placemark: placemark,
             location: location,
@@ -88,7 +91,7 @@ class EntryBroker {
                 }))
                 alertController.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: { (alert: UIAlertAction) in
                     
-                    self.updateEntry(originalEntry: originalEntry, text: text, image: image, happinessLevel: happinessLevel, placemark: placemark, location: location)
+                    self.updateEntry(originalEntry: originalEntry, text: text, image: image, isVideoEntry: isVideoEntry, videoFileUrl: videoFileUrl, happinessLevel: happinessLevel, placemark: placemark, location: location)
                 }))
                 self.currentViewController?.present(alertController, animated: true, completion: nil)
             })

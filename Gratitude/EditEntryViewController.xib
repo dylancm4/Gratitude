@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,6 +20,7 @@
                 <outlet property="locationTextField" destination="BvK-ia-fF4" id="Odj-3j-BRb"/>
                 <outlet property="textView" destination="29J-UZ-9Wf" id="qrK-xP-vg0"/>
                 <outlet property="uploadImageButton" destination="W3h-yQ-BdT" id="ReG-6o-tfW"/>
+                <outlet property="videoPlayButton" destination="4fL-0c-I2F" id="3Ws-Jq-9Ct"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -86,9 +87,22 @@
                         <constraint firstAttribute="height" constant="16" id="DC8-hy-hHN"/>
                     </constraints>
                 </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4fL-0c-I2F">
+                    <rect key="frame" x="162" y="386" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="Pji-ba-awP"/>
+                        <constraint firstAttribute="height" constant="50" id="yPT-5A-d0k"/>
+                    </constraints>
+                    <color key="tintColor" red="0.98431372549999996" green="0.97254901959999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <state key="normal" title="Button" image="play-240"/>
+                    <connections>
+                        <action selector="onVideoPlayButton:" destination="-1" eventType="touchUpInside" id="zFG-Gx-Xzk"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="0.94901960784313721" green="0.93725490196078431" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstItem="4fL-0c-I2F" firstAttribute="centerY" secondItem="W3h-yQ-BdT" secondAttribute="centerY" id="0Mo-iz-5mT"/>
                 <constraint firstItem="TAf-qY-uqt" firstAttribute="leading" secondItem="3K2-G8-PqW" secondAttribute="trailing" constant="16" id="0Sr-qN-1hk"/>
                 <constraint firstItem="W3h-yQ-BdT" firstAttribute="top" secondItem="3K2-G8-PqW" secondAttribute="bottom" constant="12" id="3wZ-zW-gTl"/>
                 <constraint firstAttribute="trailing" secondItem="TAf-qY-uqt" secondAttribute="trailing" constant="16" id="56l-5Y-n5S"/>
@@ -107,6 +121,7 @@
                 <constraint firstItem="5na-3b-F6Q" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="16" id="sUl-JX-5LP"/>
                 <constraint firstItem="BvK-ia-fF4" firstAttribute="leading" secondItem="5na-3b-F6Q" secondAttribute="trailing" constant="8" id="uFp-Ry-6JJ"/>
                 <constraint firstItem="BvK-ia-fF4" firstAttribute="top" secondItem="29J-UZ-9Wf" secondAttribute="bottom" constant="16" id="ybO-Bn-92W"/>
+                <constraint firstItem="4fL-0c-I2F" firstAttribute="centerX" secondItem="W3h-yQ-BdT" secondAttribute="centerX" id="ylf-WD-Wpf"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <point key="canvasLocation" x="34.5" y="54.5"/>
@@ -115,6 +130,7 @@
     <resources>
         <image name="camera-128" width="128" height="128"/>
         <image name="location-240" width="240" height="240"/>
+        <image name="play-240" width="240" height="240"/>
         <image name="really-happy-60" width="60" height="60"/>
     </resources>
 </document>

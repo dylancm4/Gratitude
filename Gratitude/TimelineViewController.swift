@@ -174,10 +174,12 @@ class TimelineViewController: ViewControllerBase {
         }
         
         // Display error banner if network is offline.
-        if !FirebaseClient.shared.isConnected, let navigationController = self.navigationController {
-
-            ErrorBanner.presentError(message: "Network Offline", inView: navigationController.view)
-        }
+        // Commenting out this code, since isConnected might not be set
+        // yet. Possibly fix this later.
+        //if !FirebaseClient.shared.isConnected, let navigationController = self.navigationController {
+        //
+        //    ErrorBanner.presentError(message: "Network Offline", inView: navigationController.view)
+        //}
         
         // Get existing entries.
         getEntries()
@@ -373,5 +375,11 @@ extension TimelineViewController: TimelineTableViewCellDelegate {
             
             pushViewEntryViewController(forEntry: entry)
         }
+    }
+    
+    func timelineCellPlayVideo(forVideoUrl videoUrl: URL) {
+        
+        // Present the AVPlayerViewController for the video.
+        presentVideoPlayerViewController(forVideoUrl: videoUrl)
     }
 }

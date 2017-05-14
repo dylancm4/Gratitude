@@ -154,11 +154,11 @@ class FirebaseClient {
     }
     
     // Create an entry node for the specified entry.
-    func createEntry(text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
+    func createEntry(text: String, image: UIImage?, videoFileUrl: URL?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
         
         // Firebase persistence does not work correctly for FIRStorage, so
         // error out if not connected.
-        if image != nil && !isConnected {
+        if (image != nil || videoFileUrl != nil) && !isConnected {
             
             let userInfo = [NSLocalizedDescriptionKey : "Error creating entry. Network offline."]
             failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
@@ -175,6 +175,8 @@ class FirebaseClient {
                 entryNode: entryNode,
                 text: text,
                 image: image,
+                existingVideoUrl: nil,
+                videoFileUrl: videoFileUrl,
                 happinessLevel: happinessLevel,
                 placemark: placemark,
                 location: location,
@@ -194,12 +196,13 @@ class FirebaseClient {
         }
     }
 
-    // Update the entry node for the specified entry.
-    func updateEntry(entryId: String, text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
+    // Update the entry node for the specified entry. The isVideoEntry parameter indicates
+    // whether the updated entry is a video entry.
+    func updateEntry(originalEntry: Entry, text: String, image: UIImage?, isVideoEntry: Bool, videoFileUrl: URL?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
         
         // Firebase persistence does not work correctly for FIRStorage, so
         // error out if not connected.
-        if image != nil && !isConnected {
+        if (originalEntry.imageUrl != nil || originalEntry.videoUrl != nil || image != nil || videoFileUrl != nil) && !isConnected {
             
             let userInfo = [NSLocalizedDescriptionKey : "Error updating entry. Network offline."]
             failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
@@ -210,23 +213,96 @@ class FirebaseClient {
         let funcFailure = failure
         if let currentUserId = User.currentUser?.id {
             
+            let entryId = originalEntry.id!
             let rootNode = FIRDatabase.database().reference()
             let entryNode = rootNode.child(Constants.Firebase.entriesKey).child(currentUserId).child(entryId)
-            updateEntry(
-                entryNode: entryNode,
-                text: text,
-                image: image,
-                happinessLevel: happinessLevel,
-                placemark: placemark,
-                location: location,
-                success: { (entry: Entry) in
-                    
-                    funcSuccess(entry)
-                },
-                failure: { (error: Error) in
-                    
-                    funcFailure(error)
-                })
+            if originalEntry.imageUrl != nil {
+                
+                // Delete the storage node for the entry image.
+                self.deleteEntryImage(
+                    entryId: entryId,
+                    success: {
+                        
+                        // If the user updated a video entry but did not select a new image
+                        // or video, then isVideoEntry will be true but videoFileUrl will be
+                        // nil. In this case, the existing video should not be deleted from
+                        // Firebase storage.
+                        if originalEntry.videoUrl != nil && !isVideoEntry {
+                            
+                            // Delete the storage node for the entry video.
+                            self.deleteEntryVideo(
+                                entryId: entryId,
+                                success: {
+                                    
+                                    self.updateEntry(
+                                        entryNode: entryNode,
+                                        text: text,
+                                        image: image,
+                                        existingVideoUrl: originalEntry.videoUrl,
+                                        videoFileUrl: videoFileUrl,
+                                        happinessLevel: happinessLevel,
+                                        placemark: placemark,
+                                        location: location,
+                                        success: { (entry: Entry) in
+                                            
+                                            funcSuccess(entry)
+                                        },
+                                        failure: { (error: Error) in
+                                            
+                                            funcFailure(error)
+                                        })
+                                },
+                                failure: { (error: Error) in
+                                    
+                                    funcFailure(error)
+                                })
+                        }
+                        else { // no existing video
+                            
+                            self.updateEntry(
+                                entryNode: entryNode,
+                                text: text,
+                                image: image,
+                                existingVideoUrl: originalEntry.videoUrl,
+                                videoFileUrl: videoFileUrl,
+                                happinessLevel: happinessLevel,
+                                placemark: placemark,
+                                location: location,
+                                success: { (entry: Entry) in
+                                    
+                                    funcSuccess(entry)
+                                },
+                                failure: { (error: Error) in
+                                    
+                                    funcFailure(error)
+                                })
+                        }
+                    },
+                    failure: { (error: Error) in
+                        
+                        funcFailure(error)
+                    })
+            }
+            else { // no existing image
+                
+                updateEntry(
+                    entryNode: entryNode,
+                    text: text,
+                    image: image,
+                    existingVideoUrl: originalEntry.videoUrl,
+                    videoFileUrl: videoFileUrl,
+                    happinessLevel: happinessLevel,
+                    placemark: placemark,
+                    location: location,
+                    success: { (entry: Entry) in
+                        
+                        funcSuccess(entry)
+                    },
+                    failure: { (error: Error) in
+                        
+                        funcFailure(error)
+                    })
+            }
         }
         else {
             
@@ -236,7 +312,7 @@ class FirebaseClient {
     }
     
     // Create/update the entry node for the specified entry.
-    private func updateEntry(entryNode: FIRDatabaseReference, text: String, image: UIImage?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
+    private func updateEntry(entryNode: FIRDatabaseReference, text: String, image: UIImage?, existingVideoUrl: URL?, videoFileUrl: URL?, happinessLevel: Int, placemark: String?, location: Location?, success: @escaping (_ entry: Entry) -> (), failure: @escaping (Error) -> ()) {
         
         let funcSuccess = success
         let funcFailure = failure
@@ -265,30 +341,69 @@ class FirebaseClient {
             storeEntryImage(
                 entryId: entryNode.key,
                 image: resizedImage,
-                success: { (imageUrl: String) in
+                success: { (imageUrl: URL) in
                     
-                    values[Constants.Firebase.Entry.imageUrlKey] = imageUrl
+                    values[Constants.Firebase.Entry.imageUrlKey] = imageUrl.absoluteString
                     values[Constants.Firebase.Entry.aspectRatioKey] = aspectRatio
                     
-                    // Create the entry node.
-                    self.updateEntry(
-                        entryNode: entryNode,
-                        values: values,
-                        success: { (entry: Entry) in
+                    // Create the storage node for the entry video.
+                    if let videoFileUrl = videoFileUrl {
+                        
+                        self.storeEntryVideo(
+                            entryId: entryNode.key,
+                            videoFileUrl: videoFileUrl,
+                            success: { (videoUrl: URL) in
+                                
+                                values[Constants.Firebase.Entry.videoUrlKey] = videoUrl.absoluteString
+
+                                // Create the entry node.
+                                self.updateEntry(
+                                    entryNode: entryNode,
+                                    values: values,
+                                    success: { (entry: Entry) in
+                                        
+                                        funcSuccess(entry)
+                                    },
+                                    failure: { (error: Error) in
+                                        
+                                        funcFailure(error)
+                                    })
+                            },
+                            failure: { (error: Error) in
+                                
+                                funcFailure(error)
+                            })
+                    }
+                    else { // no video file
+                        
+                        // If there is an entry video and the storage node
+                        // already exists, specify the video URL of the storage
+                        // node.
+                        if let existingVideoUrl = existingVideoUrl {
                             
-                            funcSuccess(entry)
-                        },
-                        failure: { (error: Error) in
+                            values[Constants.Firebase.Entry.videoUrlKey] = existingVideoUrl.absoluteString
+                        }
+                    
+                        // Create the entry node.
+                        self.updateEntry(
+                            entryNode: entryNode,
+                            values: values,
+                            success: { (entry: Entry) in
                             
-                            funcFailure(error)
-                        })
+                                funcSuccess(entry)
+                            },
+                            failure: { (error: Error) in
+                            
+                                funcFailure(error)
+                            })
+                    }
                 },
                 failure: { (error: Error) in
                 
                     funcFailure(error)
                 })
         }
-        else { // no image
+        else { // no image/video
             
             // Create the entry node.
             updateEntry(
@@ -336,7 +451,7 @@ class FirebaseClient {
 
         // Firebase persistence does not work correctly for FIRStorage, so
         // error out if not connected.
-        if entry.imageUrl != nil && !isConnected {
+        if (entry.imageUrl != nil || entry.videoUrl != nil) && !isConnected {
             
             let userInfo = [NSLocalizedDescriptionKey : "Error deleting entry. Network offline."]
             failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
@@ -365,13 +480,34 @@ class FirebaseClient {
                             self.deleteEntryImage(
                                 entryId: entryId,
                                 success: {
+                                    
+                                    if entry.videoUrl != nil {
+                                        
+                                        // Delete the storage node for the entry video.
+                                        self.deleteEntryVideo(
+                                            entryId: entryId,
+                                            success: {
+                                                
+                                                funcSuccess()
+                                            },
+                                            failure: { (error: Error) in
+                                            
+                                                funcFailure(error)
+                                            })
+                                    }
+                                    else {
                                 
-                                    funcSuccess()
+                                        funcSuccess()
+                                    }
                                 },
                                 failure: { (error: Error) in
                             
                                     funcFailure(error)
                                 })
+                        }
+                        else {
+                            
+                            funcSuccess()
                         }
                     }
                 })
@@ -484,7 +620,7 @@ class FirebaseClient {
     }
     
     // Create the storage node for the specified entry image.
-    private func storeEntryImage(entryId: String, image: UIImage, success: @escaping (_ imageUrl: String) -> (), failure: @escaping (Error) -> ()) {
+    private func storeEntryImage(entryId: String, image: UIImage, success: @escaping (_ imageUrl: URL) -> (), failure: @escaping (Error) -> ()) {
         
         let storageNode = FIRStorage.storage().reference()
         let entryImageNode = storageNode.child(Constants.Firebase.entryImagesKey).child("\(entryId).png")
@@ -501,7 +637,7 @@ class FirebaseClient {
                     }
                     else {
                         
-                        if let imageUrl = metadata?.downloadURL()?.absoluteString {
+                        if let imageUrl = metadata?.downloadURL() {
                             
                             success(imageUrl)
                         }
@@ -526,6 +662,58 @@ class FirebaseClient {
         let storageNode = FIRStorage.storage().reference()
         let entryImageNode = storageNode.child(Constants.Firebase.entryImagesKey).child("\(entryId).png")
         entryImageNode.delete(
+            completion: { (error: Error?) in
+                
+                if let error = error {
+                    
+                    failure(error)
+                }
+                else {
+                    
+                    success()
+                }
+            })
+    }
+
+    // Create the storage node for the specified entry video.
+    private func storeEntryVideo(entryId: String, videoFileUrl: URL, success: @escaping (_ videoUrl: URL) -> (), failure: @escaping (Error) -> ()) {
+        
+        let storageNode = FIRStorage.storage().reference()
+        let entryVideoNode = storageNode.child(Constants.Firebase.entryVideosKey).child("\(entryId).mov")
+        entryVideoNode.putFile(
+            videoFileUrl,
+            metadata: nil,
+            completion: { (metadata: FIRStorageMetadata?, error: Error?) in
+                    
+                if let error = error {
+                        
+                    failure(error)
+                }
+                else {
+                        
+                    if let videoUrl = metadata?.downloadURL() {
+                            
+                        success(videoUrl)
+                    }
+                    else {
+                            
+                        let userInfo = [NSLocalizedDescriptionKey : "Error storing entry video."]
+                        failure(NSError(domain: "FirebaseClient", code: 1, userInfo: userInfo))
+                    }
+                }
+            })
+        // An enhancement would be to use the FIRStorageUploadTask return
+        // value of putFile() and display some kind of percentage progress
+        // indicator, though the app's "local" entry feature makes this
+        // irrelevant.
+    }
+    
+    // Delete the storage node for the specified entry video.
+    func deleteEntryVideo(entryId: String, success: @escaping () -> (), failure: @escaping (Error) -> ()) {
+        
+        let storageNode = FIRStorage.storage().reference()
+        let entryVideoNode = storageNode.child(Constants.Firebase.entryVideosKey).child("\(entryId).mov")
+        entryVideoNode.delete(
             completion: { (error: Error?) in
                 
                 if let error = error {

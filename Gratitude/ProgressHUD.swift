@@ -38,7 +38,7 @@ class ProgressHUDView: UIView {
         
         let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
         rotateAnimation.fromValue = 0.0
-        rotateAnimation.toValue = CGFloat(M_PI * 2.0)
+        rotateAnimation.toValue = CGFloat(Double.pi * 2.0)
         rotateAnimation.duration = 1.0
         rotateAnimation.repeatCount = Float.infinity
         imageView.layer.add(rotateAnimation, forKey: nil)

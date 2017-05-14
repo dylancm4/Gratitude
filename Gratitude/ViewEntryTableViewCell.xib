@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="500"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="375" height="499"/>
+                <rect key="frame" x="0.0" y="0.0" width="375" height="500"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="happy-60" translatesAutoresizingMaskIntoConstraints="NO" id="v3N-5X-6Jb">
@@ -62,6 +62,18 @@
                             <constraint firstAttribute="width" secondItem="DDO-Or-kh3" secondAttribute="height" multiplier="4:3" placeholder="YES" id="5uU-va-8RN"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="88V-7E-oey">
+                        <rect key="frame" x="162" y="330" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="Gb1-22-xa7"/>
+                            <constraint firstAttribute="width" constant="50" id="TBJ-hl-Zh2"/>
+                        </constraints>
+                        <color key="tintColor" red="0.98431372549019602" green="0.97254901960784312" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <state key="normal" image="play-240"/>
+                        <connections>
+                            <action selector="onVideoPlayButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="gSu-Ou-vem"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <color key="backgroundColor" red="0.98431372549019602" green="0.97254901960784312" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
@@ -71,11 +83,13 @@
                     <constraint firstItem="TEt-t2-D8b" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-8" id="ACj-zg-d00"/>
                     <constraint firstItem="h0Z-CS-Fsh" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-4" id="BmU-8O-LGk"/>
                     <constraint firstItem="TEt-t2-D8b" firstAttribute="leading" secondItem="UNL-IR-NLk" secondAttribute="trailing" constant="2" id="CbH-ut-A0W"/>
+                    <constraint firstItem="88V-7E-oey" firstAttribute="centerY" secondItem="DDO-Or-kh3" secondAttribute="centerY" id="Cz1-zn-hfU"/>
                     <constraint firstItem="v3N-5X-6Jb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="4" id="KkN-MH-8ZI"/>
                     <constraint firstItem="v3N-5X-6Jb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="QoK-q5-ZG8"/>
                     <constraint firstItem="h0Z-CS-Fsh" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="VUn-xV-p9R"/>
                     <constraint firstItem="DDO-Or-kh3" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-4" id="Yw3-aY-iVX"/>
                     <constraint firstItem="UNL-IR-NLk" firstAttribute="centerY" secondItem="TEt-t2-D8b" secondAttribute="centerY" id="avF-sL-SCu"/>
+                    <constraint firstItem="88V-7E-oey" firstAttribute="centerX" secondItem="DDO-Or-kh3" secondAttribute="centerX" id="cR1-IK-L1K"/>
                     <constraint firstItem="UNL-IR-NLk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="4" id="f2g-1W-IGj"/>
                     <constraint firstItem="s9i-yp-StT" firstAttribute="top" secondItem="v3N-5X-6Jb" secondAttribute="bottom" constant="4" id="fX9-iF-Dfb"/>
                     <constraint firstItem="UNL-IR-NLk" firstAttribute="bottom" secondItem="DDO-Or-kh3" secondAttribute="top" constant="-12" id="fwY-Mz-XJt"/>
@@ -90,6 +104,7 @@
                 <outlet property="locationImageView" destination="UNL-IR-NLk" id="Sxa-49-EdJ"/>
                 <outlet property="locationLabel" destination="TEt-t2-D8b" id="MUG-Ro-PaL"/>
                 <outlet property="textView" destination="s9i-yp-StT" id="qlH-Ut-56W"/>
+                <outlet property="videoPlayButton" destination="88V-7E-oey" id="1O3-NF-fhu"/>
             </connections>
             <point key="canvasLocation" x="37.5" y="32"/>
         </tableViewCell>
@@ -97,5 +112,6 @@
     <resources>
         <image name="happy-60" width="60" height="60"/>
         <image name="location-240" width="240" height="240"/>
+        <image name="play-240" width="240" height="240"/>
     </resources>
 </document>

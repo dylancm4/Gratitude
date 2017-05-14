@@ -23,26 +23,23 @@ class AlamofireClient {
         imageCache: AutoPurgingImageCache())
     
     // Download the specified image.
-    func downloadImage(urlString: String, success: @escaping (_ image: UIImage) -> (), failure: @escaping (Error) -> ()) {
+    func downloadImage(url: URL, success: @escaping (_ image: UIImage) -> (), failure: @escaping (Error) -> ()) {
         
-        if let url = URL(string: urlString) {
+        let urlRequest = URLRequest(url: url)
+        imageDownloader.download(urlRequest) { response in
             
-            let urlRequest = URLRequest(url: url)
-            imageDownloader.download(urlRequest) { response in
+            if let afError = response.error {
                 
-                if let afError = response.error {
-                    
-                    failure(afError)
-                }
-                else if let image = response.result.value {
-                    
-                    success(image)
-                }
-                else {
-
-                    let userInfo = [NSLocalizedDescriptionKey : "Error downloading image."]
-                    failure(NSError(domain: "AlamofireClient", code: 1, userInfo: userInfo))
-                }
+                failure(afError)
+            }
+            else if let image = response.result.value {
+                
+                success(image)
+            }
+            else {
+                
+                let userInfo = [NSLocalizedDescriptionKey : "Error downloading image."]
+                failure(NSError(domain: "AlamofireClient", code: 1, userInfo: userInfo))
             }
         }
     }

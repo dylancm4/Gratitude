@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreLocation
+import MobileCoreServices
+import AVFoundation
 
 class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextViewDelegate, CLLocationManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
@@ -21,7 +23,11 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
     @IBOutlet weak var feelingSlider: UISlider!
     
     @IBOutlet weak var uploadImageButton: UIButton!
+    @IBOutlet weak var videoPlayButton: UIButton!
     
+    var videoPlayUrl: URL?
+    var videoFileUrl: URL?
+
     let locationManager = CLLocationManager()
     var placeOfInterest:String?
     
@@ -71,7 +77,6 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                 
                 navigationItem.title = "Edit Entry"
             }
-
         }
         
         // Navigation bar save button.
@@ -108,6 +113,9 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
         // Image button
         uploadImageButton.imageView?.contentMode = .scaleAspectFit
         
+        // Video play button
+        videoPlayButton.setImage(videoPlayButton.currentImage?.withRenderingMode(.alwaysTemplate), for: .normal)
+        
         // If new entry, use current date.
         if entry == nil {
             
@@ -142,7 +150,7 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
             if let imageUrl = entry.imageUrl {
                 
                 AlamofireClient.shared.downloadImage(
-                    urlString: imageUrl,
+                    url: imageUrl,
                     success: { (image: UIImage) in
                         
                         DispatchQueue.main.async {
@@ -164,7 +172,22 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                         }
                     })
             }
+            if let entryVideoUrl = entry.videoUrl {
+                
+                videoPlayUrl = entryVideoUrl
+            }
+            else {
+                
+                videoPlayUrl = nil
+            }
         }
+        else {
+            
+            videoPlayUrl = nil
+        }
+        videoFileUrl = nil
+        
+        videoPlayButton.isHidden = videoPlayUrl == nil
         
         if let locationCoordinate = locationManager.location?.coordinate {
             
@@ -241,6 +264,7 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                     EntryBroker.shared.createEntry(
                         text: self.textView.text,
                         image: image,
+                        videoFileUrl: self.videoFileUrl,
                         happinessLevel: Int(self.feelingSlider.value),
                         placemark: placemark,
                         location: self.getLocationObject())
@@ -265,6 +289,8 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                     originalEntry: self.entry!,
                     text: self.textView.text,
                     image: image,
+                    isVideoEntry: self.videoPlayUrl != nil,
+                    videoFileUrl: self.videoFileUrl,
                     happinessLevel: Int(self.feelingSlider.value),
                     placemark: self.locationTextField.text,
                     location: self.getLocationObject())
@@ -276,6 +302,7 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = false
+        picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
         
         let optionMenu = UIAlertController(title: nil, message: "Please choose a photo source", preferredStyle: .actionSheet)
         let cameraOption = UIAlertAction(
@@ -321,6 +348,15 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
         }
     }
     
+    @IBAction func onVideoPlayButton(_ sender: UIButton) {
+                
+        if let videoPlayUrl = videoPlayUrl {
+            
+            // Present the AVPlayerViewController for the video.
+            presentVideoPlayerViewController(forVideoUrl: videoPlayUrl)
+        }
+    }
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         
         dismiss(animated: true, completion: nil)
@@ -328,13 +364,47 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-        uploadImageButton.setImage(chosenImage, for: .normal)
+        videoFileUrl = info[UIImagePickerControllerMediaURL] as? URL
+        if let videoFileUrl = videoFileUrl {
+            
+            videoPlayUrl = videoFileUrl
+
+            if let thumbnailImage = getThumbnailImage(forVideoFileUrl: videoFileUrl) {
+                
+                uploadImageButton.setImage(thumbnailImage, for: .normal)
+            }
+        }
+        else {
+        
+            videoPlayUrl = nil
+            
+            let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+            uploadImageButton.setImage(chosenImage, for: .normal)
+        }
+        videoPlayButton.isHidden = videoPlayUrl == nil
+        
         if let uploadImageView = uploadImageButton.imageView {
             
             Constants.setRoundCornersForAspectFit(imageView: uploadImageView, radius: 3.0)
         }
         dismiss(animated: true, completion: nil)
+    }
+    
+    private func getThumbnailImage(forVideoFileUrl videoFileUrl: URL) -> UIImage? {
+        
+        let imageGenerator = AVAssetImageGenerator(asset: AVAsset(url: videoFileUrl))
+        
+        do {
+            
+            let thumbnailCGImage = try imageGenerator.copyCGImage(at: CMTimeMake(1, 60), actualTime: nil)
+            return UIImage(cgImage: thumbnailCGImage)
+        }
+        catch {
+            
+            // Use placeholder image if there is an error generating
+            // the thumbnail image.
+            return UIImage(named: Constants.ImageName.imagePlaceholder)
+        }
     }
     
     // MARK: - Notifications

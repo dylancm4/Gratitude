@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AVKit
+import AVFoundation
 
 class ViewControllerBase: UIViewController {
 
@@ -66,6 +68,17 @@ class ViewControllerBase: UIViewController {
                 
                 progressHud.hide(animated: true)
             }
+        }
+    }
+    
+    // Present the AVPlayerViewController for the specified video.
+    func presentVideoPlayerViewController(forVideoUrl videoUrl: URL) {
+        
+        let playerViewController = AVPlayerViewController()
+        playerViewController.player = AVPlayer(url: videoUrl)
+        present(playerViewController, animated: true) {
+            
+            playerViewController.player!.play()
         }
     }
 }

@@ -8,6 +8,11 @@
 
 import UIKit
 
+protocol ViewEntryTableViewCellDelegate: class {
+    
+    func viewEntryCellPlayVideo(forVideoUrl videoUrl: URL)
+}
+
 class ViewEntryTableViewCell: UITableViewCell {
 
     @IBOutlet weak var dateLabel: UILabel!
@@ -16,6 +21,9 @@ class ViewEntryTableViewCell: UITableViewCell {
     @IBOutlet weak var locationImageView: UIImageView!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var entryImageView: UIImageView!
+    @IBOutlet weak var videoPlayButton: UIButton!
+    
+    var videoPlayUrl: URL?
     
     var entryImageViewAspectConstraint : NSLayoutConstraint? {
         
@@ -34,6 +42,7 @@ class ViewEntryTableViewCell: UITableViewCell {
     }
     
     var entry: Entry?
+    weak var delegate: ViewEntryTableViewCellDelegate?
     
     override func awakeFromNib() {
         
@@ -44,12 +53,22 @@ class ViewEntryTableViewCell: UITableViewCell {
         locationImageView.image = locationImageView.image?.withRenderingMode(.alwaysTemplate)
         entryImageView.layer.cornerRadius = 3
         entryImageView.clipsToBounds = true
+        videoPlayButton.setImage(videoPlayButton.currentImage?.withRenderingMode(.alwaysTemplate), for: .normal)
     }
 
+    @IBAction func onVideoPlayButton(_ sender: UIButton) {
+                
+        if let delegate = delegate, let videoPlayUrl = videoPlayUrl {
+            
+            delegate.viewEntryCellPlayVideo(forVideoUrl: videoPlayUrl)
+        }
+    }
+    
     // Set the cell contents based on the specified parameters.
-    func setData(entry: Entry) {
+    func setData(entry: Entry, delegate: ViewEntryTableViewCellDelegate) {
         
         self.entry = entry
+        self.delegate = delegate
         
         if let happinessLevel = entry.happinessLevel {
             
@@ -94,6 +113,19 @@ class ViewEntryTableViewCell: UITableViewCell {
                 setEntryImageViewAspectConstraint(hasImage: false, aspectRatio: nil)
                 entryImageView.image = nil
             }
+            
+            if let entryLocalVideoFileUrl = entry.localVideoFileUrl {
+                
+                videoPlayUrl = entryLocalVideoFileUrl
+            }
+            else if let entryVideoUrl = entry.videoUrl {
+                
+                videoPlayUrl = entryVideoUrl
+            }
+            else {
+                
+                videoPlayUrl = nil
+            }
         }
         else {
 
@@ -101,7 +133,7 @@ class ViewEntryTableViewCell: UITableViewCell {
                 
                 setEntryImageViewAspectConstraint(hasImage: true, aspectRatio: entry.aspectRatio)
                 AlamofireClient.shared.downloadImage(
-                    urlString: imageUrl,
+                    url: imageUrl,
                     success: { (image: UIImage) in
                         
                         DispatchQueue.main.async {
@@ -124,7 +156,18 @@ class ViewEntryTableViewCell: UITableViewCell {
                 setEntryImageViewAspectConstraint(hasImage: false, aspectRatio: nil)
                 entryImageView.image = nil
             }
+            
+            if let entryVideoUrl = entry.videoUrl {
+                
+                videoPlayUrl = entryVideoUrl
+            }
+            else {
+                
+                videoPlayUrl = nil
+            }
         }
+        
+        videoPlayButton.isHidden = videoPlayUrl == nil
     }
     
     // Set the entryImageView aspect ratio constraint based on the image.

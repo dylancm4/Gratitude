@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="438"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="375" height="437"/>
+                <rect key="frame" x="0.0" y="0.0" width="375" height="438"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="happy-60" translatesAutoresizingMaskIntoConstraints="NO" id="v3N-5X-6Jb">
@@ -77,6 +77,18 @@
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="67n-tN-Szf">
+                        <rect key="frame" x="162" y="266" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="Eyp-2M-abf"/>
+                            <constraint firstAttribute="width" constant="50" id="ITC-kg-PRp"/>
+                        </constraints>
+                        <color key="tintColor" red="0.98431372549999996" green="0.97254901959999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <state key="normal" image="play-240"/>
+                        <connections>
+                            <action selector="onVideoPlayButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="kzj-jB-1a0"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <color key="backgroundColor" red="0.98431372549019602" green="0.97254901960784312" blue="0.95686274509803915" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
@@ -86,8 +98,10 @@
                     <constraint firstItem="TEt-t2-D8b" firstAttribute="leading" secondItem="UNL-IR-NLk" secondAttribute="trailing" constant="2" id="CbH-ut-A0W"/>
                     <constraint firstItem="OoF-13-nvr" firstAttribute="top" secondItem="tPC-Py-wvC" secondAttribute="bottom" constant="-2" id="Cdx-PT-rCR"/>
                     <constraint firstItem="UNL-IR-NLk" firstAttribute="bottom" secondItem="v3N-5X-6Jb" secondAttribute="bottom" constant="-4" id="FjW-OL-pfN"/>
+                    <constraint firstItem="67n-tN-Szf" firstAttribute="centerX" secondItem="DDO-Or-kh3" secondAttribute="centerX" id="I1B-Mq-sCa"/>
                     <constraint firstItem="v3N-5X-6Jb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="4" id="KkN-MH-8ZI"/>
                     <constraint firstItem="v3N-5X-6Jb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="QoK-q5-ZG8"/>
+                    <constraint firstItem="67n-tN-Szf" firstAttribute="centerY" secondItem="DDO-Or-kh3" secondAttribute="centerY" id="RKJ-ff-p8R"/>
                     <constraint firstItem="h0Z-CS-Fsh" firstAttribute="centerX" secondItem="tPC-Py-wvC" secondAttribute="centerX" id="RvG-wR-kBO"/>
                     <constraint firstItem="h0Z-CS-Fsh" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="4" id="VUn-xV-p9R"/>
                     <constraint firstItem="DDO-Or-kh3" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-4" id="Yw3-aY-iVX"/>
@@ -111,6 +125,7 @@
                 <outlet property="locationLabel" destination="TEt-t2-D8b" id="MUG-Ro-PaL"/>
                 <outlet property="monthNameLabel" destination="h0Z-CS-Fsh" id="dEX-DR-2Ik"/>
                 <outlet property="textView" destination="s9i-yp-StT" id="qlH-Ut-56W"/>
+                <outlet property="videoPlayButton" destination="67n-tN-Szf" id="FrG-RJ-OGn"/>
             </connections>
             <point key="canvasLocation" x="38" y="32"/>
         </tableViewCell>
@@ -118,5 +133,6 @@
     <resources>
         <image name="happy-60" width="60" height="60"/>
         <image name="location-240" width="240" height="240"/>
+        <image name="play-240" width="240" height="240"/>
     </resources>
 </document>

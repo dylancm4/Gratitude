@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -17,14 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Configure a default Firebase app.
         FirebaseClient.shared.configure()
-
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
         // Set up log in and sign out notification observers.
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDidLogin), name: Constants.NotificationName.userDidLogin, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.userDidSignout), name: Constants.NotificationName.userDidSignout, object: nil)
-
+        
         if User.currentUser == nil || !FirebaseClient.shared.isSignedIn {
             
             presentLoginSignupScreens()

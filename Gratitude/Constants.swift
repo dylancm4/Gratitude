@@ -71,6 +71,7 @@ struct Constants {
             static let textKey = "text"
             static let imageUrlKey = "imageUrl"
             static let aspectRatioKey = "aspectRatio"
+            static let videoUrlKey = "videoUrl"
             static let createdDateKey = "createdDate"
             static let happinessLevelKey = "happinessLevel"
             static let placemarkKey = "placemark"
@@ -85,6 +86,7 @@ struct Constants {
         }
         
         static let entryImagesKey = "entryImages"
+        static let entryVideosKey = "entryVideos"
     }
     
     struct GoogleMaps {
