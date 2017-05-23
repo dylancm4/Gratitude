@@ -118,7 +118,7 @@ class ViewEntryTableViewCell: UITableViewCell {
                 
                 videoPlayUrl = entryLocalVideoFileUrl
             }
-            else if let entryVideoUrl = entry.videoUrl {
+            else if entry.isLocalVideoEntry, let entryVideoUrl = entry.videoUrl {
                 
                 videoPlayUrl = entryVideoUrl
             }

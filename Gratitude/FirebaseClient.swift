@@ -238,7 +238,7 @@ class FirebaseClient {
                                         entryNode: entryNode,
                                         text: text,
                                         image: image,
-                                        existingVideoUrl: originalEntry.videoUrl,
+                                        existingVideoUrl: nil,
                                         videoFileUrl: videoFileUrl,
                                         happinessLevel: happinessLevel,
                                         placemark: placemark,
@@ -326,9 +326,17 @@ class FirebaseClient {
             
             values[Constants.Firebase.Entry.placemarkKey] = placemark
         }
+        else {
+            
+            values[Constants.Firebase.Entry.placemarkKey] = NSNull()
+        }
         if let location = location {
             
             values[Constants.Firebase.Entry.locationKey] = location.dictionary
+        }
+        else {
+            
+            values[Constants.Firebase.Entry.locationKey] = NSNull()
         }
         
         if let image = image {
@@ -383,6 +391,10 @@ class FirebaseClient {
                             
                             values[Constants.Firebase.Entry.videoUrlKey] = existingVideoUrl.absoluteString
                         }
+                        else {
+                            
+                            values[Constants.Firebase.Entry.videoUrlKey] = NSNull()
+                        }
                     
                         // Create the entry node.
                         self.updateEntry(
@@ -405,6 +417,10 @@ class FirebaseClient {
         }
         else { // no image/video
             
+            values[Constants.Firebase.Entry.imageUrlKey] = NSNull()
+            values[Constants.Firebase.Entry.aspectRatioKey] = NSNull()
+            values[Constants.Firebase.Entry.videoUrlKey] = NSNull()
+
             // Create the entry node.
             updateEntry(
                 entryNode: entryNode,

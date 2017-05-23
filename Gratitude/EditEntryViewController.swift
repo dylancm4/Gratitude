@@ -289,8 +289,8 @@ class EditEntryViewController: ViewControllerBase, UIScrollViewDelegate, UITextV
                     originalEntry: self.entry!,
                     text: self.textView.text,
                     image: image,
-                    isVideoEntry: self.videoPlayUrl != nil,
                     videoFileUrl: self.videoFileUrl,
+                    isVideoEntry: self.videoPlayUrl != nil,
                     happinessLevel: Int(self.feelingSlider.value),
                     placemark: self.locationTextField.text,
                     location: self.getLocationObject())

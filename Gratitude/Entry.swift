@@ -37,8 +37,11 @@ class Entry {
     // Image for a temporary "local" entry.
     var localImage: UIImage?
     
-    // Video file URL for a temporary "local entry.
+    // Video file URL for a temporary "local" entry.
     var localVideoFileUrl: URL?
+    
+    // Indicates whether a temporary "local" entry is a video entry.
+    var isLocalVideoEntry = false
     
     // Indicates whether this entry is currently in the process of being deleted.
     var isLocalMarkedForDelete = false
@@ -100,11 +103,12 @@ class Entry {
         self.isLocal = false
         self.localImage = nil
         self.localVideoFileUrl = nil
+        self.isLocalVideoEntry = false
         self.isLocalMarkedForDelete = false
     }
     
     // Creates a temporary "local" Entry.
-    init(text: String, image: UIImage?, videoUrl: URL?, videoFileUrl: URL?, happinessLevel: Int?, placemark: String?, createdDate: Date?) {
+    init(text: String, image: UIImage?, videoUrl: URL?, videoFileUrl: URL?, isVideoEntry: Bool, happinessLevel: Int?, placemark: String?, createdDate: Date?) {
         
         self.id = "\(Int64(arc4random()))"
         self.text = text
@@ -132,6 +136,7 @@ class Entry {
             self.aspectRatio = nil
         }
         self.localVideoFileUrl = videoFileUrl
+        self.isLocalVideoEntry = isVideoEntry
         self.isLocalMarkedForDelete = false
     }
 
